@@ -1,8 +1,10 @@
+// import 'package:comman/pages/auth.dart';
 import 'package:comman/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import './theme/app_theme.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -42,7 +44,10 @@ class _MyAppState extends State<MyApp> {
       themeMode: theme,
 
       // body of the main page
-      home: HomePage(
+      home:
+          //AuthScreen(changeTheme: changeTheme, currentTheme: theme),
+
+          HomePage(
         changeTheme: changeTheme,
         currentTheme: theme,
       ),

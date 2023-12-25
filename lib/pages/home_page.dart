@@ -1,7 +1,8 @@
 import 'package:comman/widgets/crm.dart';
 import 'package:comman/widgets/notifications.dart';
-import 'package:comman/widgets/settings.dart';
-import 'package:comman/widgets/team.dart';
+import 'package:comman/widgets/hrm.dart';
+import 'package:comman/widgets/home.dart';
+import 'package:comman/widgets/sidebar.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -15,7 +16,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Widget content = const Center(child: Text('Team'));
+  Widget content = const Home();
 
   @override
   Widget build(BuildContext context) {
@@ -33,12 +34,20 @@ class _HomePageState extends State<HomePage> {
           centerTitle: true,
           toolbarHeight: 60,
 
-          title: const Text(
-            "COMMAN",
-            style: TextStyle(
-              fontSize: 25,
-              fontWeight: FontWeight.w800,
-              fontFamily: 'Roboto',
+          title: InkWell(
+            highlightColor: null,
+            onTap: () {
+              setState(() {
+                content = const Home();
+              });
+            },
+            child: const Text(
+              "COMMAN",
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.w800,
+                fontFamily: 'Roboto',
+              ),
             ),
           ),
 
@@ -52,15 +61,26 @@ class _HomePageState extends State<HomePage> {
           actions: width > 600
               // desktop view
               ? [
-                  // team button
+                  // Home/ dashboard button
                   IconButton(
                     onPressed: () {
                       setState(() {
-                        content = const Team();
+                        content = const Home();
+                      });
+                    },
+                    icon: const Icon(Icons.home),
+                  ),
+
+                  // HRM
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        content = const HRM();
                       });
                     },
                     icon: const Icon(Icons.group),
                   ),
+
                   // CRM buttom
                   IconButton(
                     onPressed: () {
@@ -68,9 +88,10 @@ class _HomePageState extends State<HomePage> {
                         content = const CRM();
                       });
                     },
-                    icon: const Icon(Icons.person),
+                    icon: const Icon(Icons.widgets),
                   ),
-                  // notifications button
+
+                  // Notifications button
                   IconButton(
                     onPressed: () {
                       setState(() {
@@ -109,59 +130,46 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(width: 10),
                 ],
           bottom: width < 600
-              ? TabBar(
+              ? const TabBar(
                   labelColor: Colors.white,
                   unselectedLabelColor: Colors.white54,
                   indicatorSize: TabBarIndicatorSize.tab,
-                  tabs: const [
+                  tabs: [
                     Tab(
-                      icon: Icon(Icons.group),
-                      text: 'Team',
-                      // iconMargin: EdgeInsets.all(3),
+                      icon: Icon(Icons.home),
+                      text: 'Home',
                     ),
                     Tab(
-                      icon: Icon(Icons.person),
+                      icon: Icon(Icons.group),
+                      text: 'HRM',
+                    ),
+                    Tab(
+                      icon: Icon(Icons.widgets),
                       text: 'CRM',
                     ),
                     Tab(
                       icon: Icon(Icons.notifications),
                       text: 'Alerts',
                     ),
-                    Tab(
-                      icon: Icon(Icons.settings),
-                      text: 'Setting',
-                    ),
                   ],
-                  onTap: (value) {
-                    setState(() {
-                      if (value == 0) content = const Team();
-                      if (value == 1) content = const CRM();
-                      if (value == 2) content = const Notifications();
-                      if (value == 3) content = const Settings();
-                    });
-                  },
                 )
               : const PreferredSize(
                   preferredSize: Size(0, 0),
                   child: SizedBox(),
                 ),
         ),
-        drawer: Drawer(
-          width: width > 600 ? width * 0.25 : width * 0.875,
-          child: const Center(
-            child: Text(
-              "LOL 😂\nhold on buddy",
-              style: TextStyle(
-                fontSize: 20,
-                height: 1.3,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
+        drawer: const SideBar(),
 
         // body of main page
-        body: content,
+        body: width > 600
+            ? content // web view
+            : const TabBarView(children: [
+                // mobile view
+                Home(),
+                HRM(),
+                CRM(),
+                Notifications(),
+              ]),
       ),
     );
   }
