@@ -1,10 +1,12 @@
-// import 'package:comman/pages/auth.dart';
-import 'package:comman/pages/home_page.dart';
+import 'package:comman/pages/auth.dart';
+// import 'package:comman/pages/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
 import './theme/app_theme.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
   runApp(const MyApp());
 }
 
@@ -44,13 +46,12 @@ class _MyAppState extends State<MyApp> {
       themeMode: theme,
 
       // body of the main page
-      home:
-          //AuthScreen(changeTheme: changeTheme, currentTheme: theme),
+      home: AuthScreen(changeTheme: changeTheme, currentTheme: theme),
 
-          HomePage(
-        changeTheme: changeTheme,
-        currentTheme: theme,
-      ),
+      //     HomePage(
+      //   changeTheme: changeTheme,
+      //   currentTheme: theme,
+      // ),
     );
   }
 }
