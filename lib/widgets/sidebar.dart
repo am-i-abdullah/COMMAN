@@ -1,13 +1,15 @@
+import 'package:comman/provider/token_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SideBar extends StatefulWidget {
-  const SideBar({super.key});
-
+class SideBar extends ConsumerStatefulWidget {
+  const SideBar({super.key, required this.storage});
+  final storage;
   @override
-  State<SideBar> createState() => _SideBarState();
+  ConsumerState<SideBar> createState() => _SideBarState();
 }
 
-class _SideBarState extends State<SideBar> {
+class _SideBarState extends ConsumerState<SideBar> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -34,8 +36,7 @@ class _SideBarState extends State<SideBar> {
                 ),
                 decoration: const BoxDecoration(
                   image: DecorationImage(
-                    image: NetworkImage(
-                        'https://propakistani.pk/wp-content/uploads/2023/01/NSTP-Islamabad.jpg'),
+                    image: AssetImage('assets/cover.jpg'),
                     opacity: 0.3,
                     fit: BoxFit.fill,
                   ),
@@ -118,6 +119,17 @@ class _SideBarState extends State<SideBar> {
             leading: const Icon(Icons.notifications),
             title: const Text("Notifications"),
             onTap: () {},
+          ),
+
+          IconButton(
+            onPressed: () async {
+              ref.read(tokenProvider.state).state = null;
+              await widget.storage.write(key: 'token', value: null);
+
+              print('logged out successfully');
+              print(widget.storage.read(key: 'token'));
+            },
+            icon: const Icon(Icons.logout),
           ),
         ],
       ),

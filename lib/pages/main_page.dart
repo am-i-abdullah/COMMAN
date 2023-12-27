@@ -1,16 +1,22 @@
-import 'package:comman/widgets/crm.dart';
-import 'package:comman/widgets/notifications.dart';
-import 'package:comman/widgets/hrm.dart';
-import 'package:comman/widgets/home.dart';
+import 'package:comman/api/auth/get_user.dart';
+import 'package:comman/utils/constants.dart';
+import 'package:comman/pages/subpages/crm.dart';
+import 'package:comman/pages/subpages/notifications.dart';
+import 'package:comman/pages/subpages/hrm.dart';
+import 'package:comman/pages/subpages/home.dart';
 import 'package:comman/widgets/sidebar.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage(
-      {super.key, required this.changeTheme, required this.currentTheme});
+      {super.key,
+      required this.changeTheme,
+      required this.currentTheme,
+      required this.storage});
 
   final void Function() changeTheme;
   final currentTheme;
+  final storage;
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -38,6 +44,7 @@ class _HomePageState extends State<HomePage> {
             highlightColor: null,
             onTap: () {
               setState(() {
+                getUser(token: tokenToken);
                 content = const Home();
               });
             },
@@ -58,7 +65,7 @@ class _HomePageState extends State<HomePage> {
           //       : 'assets/dark.png',
           //   height: 25,
           // ),
-          actions: width > 600
+          actions: width > 700
               // desktop view
               ? [
                   // Home/ dashboard button
@@ -129,7 +136,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(width: 10),
                 ],
-          bottom: width < 600
+          bottom: width < 700
               ? const TabBar(
                   labelColor: Colors.white,
                   unselectedLabelColor: Colors.white54,
@@ -158,10 +165,10 @@ class _HomePageState extends State<HomePage> {
                   child: SizedBox(),
                 ),
         ),
-        drawer: const SideBar(),
+        drawer: SideBar(storage: widget.storage),
 
         // body of main page
-        body: width > 600
+        body: width > 700
             ? content // web view
             : const TabBarView(children: [
                 // mobile view

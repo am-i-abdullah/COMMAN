@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 var kColorScheme = ColorScheme.fromSeed(
   seedColor: const Color.fromARGB(255, 6, 106, 254),
@@ -28,12 +29,12 @@ var lightModeTheme = ThemeData().copyWith(
       backgroundColor: kColorScheme.primaryContainer,
     ),
   ),
-  textTheme: ThemeData().textTheme.copyWith(
-        titleLarge: TextStyle(
-          color: kColorScheme.onSecondaryContainer,
-          fontWeight: FontWeight.normal,
-        ),
-      ),
+  textTheme: GoogleFonts.interTextTheme().copyWith(
+    titleLarge: TextStyle(
+      color: kColorScheme.onSecondaryContainer,
+      fontWeight: FontWeight.normal,
+    ),
+  ),
 );
 
 var darkModeTheme = ThemeData.dark().copyWith(

@@ -1,4 +1,5 @@
 import 'package:comman/widgets/update_card.dart';
+import 'package:comman/widgets/user_organizations.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -21,8 +22,20 @@ class _HomeState extends State<Home> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 20),
+
             Text(
-              'Welcome, Taimoor Ikram!',
+              'Your Organizations!',
+              textAlign: TextAlign.start,
+              style: GoogleFonts.lato(
+                fontSize: 22,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            const UserOrganizations(),
+
+            Text(
+              'Overall Performance!',
               textAlign: TextAlign.start,
               style: GoogleFonts.lato(
                 fontSize: 22,
