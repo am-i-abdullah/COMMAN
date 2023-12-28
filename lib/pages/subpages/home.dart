@@ -1,5 +1,6 @@
-import 'package:comman/widgets/update_card.dart';
-import 'package:comman/widgets/user_organizations.dart';
+import 'package:comman/widgets/home/employee_organizations.dart';
+import 'package:comman/widgets/home/update_card.dart';
+import 'package:comman/widgets/home/user_organizations.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -31,8 +32,20 @@ class _HomeState extends State<Home> {
               ),
             ),
             const SizedBox(height: 20),
-
             const UserOrganizations(),
+
+            const SizedBox(height: 20),
+            Text(
+              'Other Organizatoins you are part of!',
+              textAlign: TextAlign.start,
+              style: GoogleFonts.lato(
+                fontSize: 22,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            const EmployeeOrganizations(),
+            const SizedBox(height: 20),
 
             Text(
               'Overall Performance!',

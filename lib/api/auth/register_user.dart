@@ -1,3 +1,4 @@
+import 'package:comman/utils/constants.dart';
 import 'package:dio/dio.dart';
 
 Future registerUser({
@@ -7,22 +8,16 @@ Future registerUser({
   required String firstName,
   required String lastName,
 }) async {
-  /* 
-  return access token, and refresh token
-      -> access token: for using api 
-      -> access token: for getting new access token after expiry
-  */
-
   Map<String, String> body = {
     "username": username,
     "password": password,
     "password_confirmation": password,
     "email": email,
-    "first_name": 'abc',
-    "last_name": 'xyz',
+    "first_name": firstName,
+    "last_name": lastName,
   };
 
-  var url = 'http://192.168.43.185:8000/hrm/register/';
+  var url = 'http://$ipAddress:8000/hrm/register/';
   Dio dio = Dio();
 
   try {

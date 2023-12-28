@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math';
 
-class OrganizationCard extends StatelessWidget {
-  const OrganizationCard({
+class EmployeeOrganizationCard extends StatelessWidget {
+  const EmployeeOrganizationCard({
     super.key,
+    required this.id,
     required this.tagLine,
     required this.organizationName,
   });
-
+  final String id;
   final String tagLine;
   final String organizationName;
 
@@ -47,46 +48,10 @@ class OrganizationCard extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            Text(
-              'Completion: $completionRate%',
-              style: const TextStyle(fontSize: 18),
+            const Text(
+              'Team: Machine Learning',
+              style: TextStyle(fontSize: 18),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.green[400],
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: TextButton(
-                      onPressed: () {},
-                      child: const Text(
-                        "Edit Details",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 5),
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.red[400],
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: TextButton(
-                      onPressed: () {},
-                      child: const Text(
-                        "Transfer Control",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            )
           ],
         ),
       ),

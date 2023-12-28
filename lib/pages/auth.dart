@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'package:comman/api/data_fetching/get_user.dart';
 import 'package:comman/api/auth/register_user.dart';
 import 'package:comman/api/auth/user_auth.dart';
 import 'package:comman/provider/token_provider.dart';
+import 'package:comman/provider/user_provider.dart';
 import 'package:comman/widgets/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -54,27 +56,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         isBusy = true;
       });
 
-      // login mode, authentication
-      if (isLogin) {
-        print('logging.....');
-
-        var token = await userAuth(
-          username: userName,
-          password: userPassword,
-        );
-
-        if (token.isEmpty) return;
-
-        print('token: ${ref.read(tokenProvider.state).state}');
-
-        ref.read(tokenProvider.state).state = token;
-
-        widget.storage.write(key: 'token', value: token);
-
-        print('token: ${ref.read(tokenProvider.state).state}');
-      } else {
-        print('registering...');
-
+      // registeration mode
+      if (!isLogin) {
+        print('registering user...');
         await registerUser(
           username: userName,
           password: userPassword,
@@ -84,6 +68,30 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         );
       }
 
+      // logging back user, or authenticating
+      var token = await userAuth(
+        username: userName,
+        password: userPassword,
+      );
+
+      if (token.isEmpty) {
+        print('nothing.............');
+        return;
+      }
+
+      ref.read(tokenProvider.state).state = token;
+      widget.storage.write(key: 'token', value: token);
+
+      var userDetails = await getUser(token: token);
+
+      ref.read(userProvider).username = userDetails['username'];
+      ref.read(userProvider).firstname = userDetails['first_name'];
+      ref.read(userProvider).lastname = userDetails['last_name'];
+      ref.read(userProvider).email = userDetails['email'];
+
+      print(userDetails);
+
+      print(ref.read(userProvider.state).state.firstname);
       setState(() {
         isBusy = false;
       });

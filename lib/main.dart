@@ -1,8 +1,8 @@
-// ignore_for_file: unused_import
-
+import 'package:comman/api/data_fetching/get_user.dart';
 import 'package:comman/pages/auth.dart';
 import 'package:comman/pages/main_page.dart';
 import 'package:comman/provider/token_provider.dart';
+import 'package:comman/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -49,12 +49,16 @@ class _MyAppState extends ConsumerState<MyApp> {
     var token = await storage.read(key: 'token');
     if (token == null) isTokenAvailable = false;
 
-    print('token $token');
-    print(isTokenAvailable);
-
     if (isTokenAvailable) {
       ref.read(tokenProvider.state).state = token;
+      var userDetails = await getUser(token: token!);
+
+      ref.read(userProvider).username = userDetails['username'];
+      ref.read(userProvider).firstname = userDetails['first_name'];
+      ref.read(userProvider).lastname = userDetails['last_name'];
+      ref.read(userProvider).email = userDetails['email'];
     }
+    setState(() {});
   }
 
   @override

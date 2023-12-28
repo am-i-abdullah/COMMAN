@@ -1,4 +1,5 @@
 import 'package:comman/provider/token_provider.dart';
+import 'package:comman/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,6 +13,7 @@ class SideBar extends ConsumerStatefulWidget {
 class _SideBarState extends ConsumerState<SideBar> {
   @override
   Widget build(BuildContext context) {
+    var userDetails = ref.read(userProvider.state).state;
     final width = MediaQuery.of(context).size.width;
 
     return Drawer(
@@ -22,7 +24,8 @@ class _SideBarState extends ConsumerState<SideBar> {
             children: [
               UserAccountsDrawerHeader(
                 margin: const EdgeInsets.only(bottom: 0),
-                accountName: const Text('Taimoor Ikram'),
+                accountName:
+                    Text('${userDetails.firstname} ${userDetails.lastname}'),
                 accountEmail: const Text('timmmy@gmail.com'),
                 currentAccountPicture: CircleAvatar(
                   child: ClipOval(
@@ -120,7 +123,7 @@ class _SideBarState extends ConsumerState<SideBar> {
             title: const Text("Notifications"),
             onTap: () {},
           ),
-
+          const Expanded(child: SizedBox()),
           IconButton(
             onPressed: () async {
               ref.read(tokenProvider.state).state = null;

@@ -5,4 +5,4 @@ var userr = 'ghazali';
 
 var passs = '12345678';
 
-var ipAddress = '192.168.43.185';
+var ipAddress = '10.7.81.214';

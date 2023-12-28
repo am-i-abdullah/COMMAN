@@ -1,8 +1,18 @@
 class User {
-  String? token;
-  String? username;
-  String? firstname;
-  String? lastname;
-  String? emal;
-  String? profileURL;
+  late String token;
+  late String username;
+  late String firstname;
+  late String lastname;
+  late String email;
+  late String profileURL;
+
+  // Constructor
+  User() {
+    token = '';
+    username = '';
+    firstname = '';
+    lastname = '';
+    email = '';
+    profileURL = '';
+  }
 }

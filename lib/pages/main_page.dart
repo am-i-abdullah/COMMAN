@@ -1,4 +1,6 @@
-import 'package:comman/api/auth/get_user.dart';
+import 'package:comman/api/data_fetching/get_user.dart';
+import 'package:comman/models/user_model.dart';
+import 'package:comman/provider/user_provider.dart';
 import 'package:comman/utils/constants.dart';
 import 'package:comman/pages/subpages/crm.dart';
 import 'package:comman/pages/subpages/notifications.dart';
@@ -6,8 +8,9 @@ import 'package:comman/pages/subpages/hrm.dart';
 import 'package:comman/pages/subpages/home.dart';
 import 'package:comman/widgets/sidebar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage(
       {super.key,
       required this.changeTheme,
@@ -18,14 +21,16 @@ class HomePage extends StatefulWidget {
   final currentTheme;
   final storage;
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> {
   Widget content = const Home();
 
   @override
   Widget build(BuildContext context) {
+    // *** *** *** *** *** //
+    ref.watch(userProvider);
     // varying icon for theme
     var icon = (widget.currentTheme == ThemeMode.dark)
         ? Icons.light_mode
@@ -110,9 +115,9 @@ class _HomePageState extends State<HomePage> {
 
                   // user name
                   const SizedBox(width: 15),
-                  const Text(
-                    "User Name",
-                    style: TextStyle(fontSize: 20),
+                  Text(
+                    '${ref.watch(userProvider).firstname} ${ref.watch(userProvider).lastname}',
+                    style: const TextStyle(fontSize: 20),
                   ),
                   const SizedBox(width: 15),
                   // change theme button
