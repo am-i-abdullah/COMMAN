@@ -5,20 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-class NewTask extends ConsumerStatefulWidget {
-  const NewTask({
+class NewOrganizationTask extends ConsumerStatefulWidget {
+  const NewOrganizationTask({
     super.key,
     required this.organizationId,
-    required this.customerId,
   });
   final String organizationId;
-  final int customerId;
 
   @override
-  ConsumerState<NewTask> createState() => _NewTaskState();
+  ConsumerState<NewOrganizationTask> createState() =>
+      _NewOrganizationTaskState();
 }
 
-class _NewTaskState extends ConsumerState<NewTask> {
+class _NewOrganizationTaskState extends ConsumerState<NewOrganizationTask> {
   final formKey = GlobalKey<FormState>();
 
   String title = '';
@@ -57,10 +56,6 @@ class _NewTaskState extends ConsumerState<NewTask> {
         key: formKey,
         child: Column(
           children: [
-            const Text(
-              "Fill the form for new task",
-              style: TextStyle(fontSize: 18),
-            ),
             // Title input
             Padding(
               padding: const EdgeInsets.all(8),
@@ -130,6 +125,7 @@ class _NewTaskState extends ConsumerState<NewTask> {
                       ),
                       child: TextButton(
                         onPressed: () async {
+                          // bool isValid = true;
                           bool isValid = formKey.currentState!.validate();
                           formKey.currentState!.save();
 
@@ -148,24 +144,10 @@ class _NewTaskState extends ConsumerState<NewTask> {
                             Dio dio = Dio();
 
                             try {
-                              print('sending new task');
+                              print('sending new org task');
                               var response = await dio.post(
                                 'http://$ipAddress:8000/hrm/tasks/',
                                 data: body,
-                                options: Options(
-                                  headers: {
-                                    "Authorization":
-                                        "Bearer ${ref.read(tokenProvider.state).state}",
-                                  },
-                                ),
-                              );
-
-                              await dio.post(
-                                'http://$ipAddress:8000/crm/tasks/',
-                                data: {
-                                  'customer_id': widget.customerId.toString(),
-                                  'task_id': response.data['id'].toString(),
-                                },
                                 options: Options(
                                   headers: {
                                     "Authorization":
@@ -184,6 +166,7 @@ class _NewTaskState extends ConsumerState<NewTask> {
                             setState(() {
                               isLoading = false;
                             });
+                            return;
                           }
                         },
                         child: const Text(

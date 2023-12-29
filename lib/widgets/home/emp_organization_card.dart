@@ -1,17 +1,33 @@
+import 'package:comman/provider/token_provider.dart';
+import 'package:comman/utils/constants.dart';
+import 'package:comman/widgets/organization/leave_organization.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:math';
 
-class EmployeeOrganizationCard extends StatelessWidget {
+class EmployeeOrganizationCard extends ConsumerStatefulWidget {
   const EmployeeOrganizationCard({
     super.key,
     required this.id,
     required this.tagLine,
     required this.organizationName,
+    required this.refresh,
   });
   final String id;
   final String tagLine;
   final String organizationName;
+  final void Function() refresh;
+
+  @override
+  ConsumerState<EmployeeOrganizationCard> createState() =>
+      _EmployeeOrganizationCardState();
+}
+
+class _EmployeeOrganizationCardState
+    extends ConsumerState<EmployeeOrganizationCard> {
+  var rank;
+  var team;
 
   double getResponsiveFontSize(
       BuildContext context, double percentageOfScreenWidth) {
@@ -19,10 +35,43 @@ class EmployeeOrganizationCard extends StatelessWidget {
   }
 
   @override
+  void initState() {
+    super.initState();
+    getData();
+  }
+
+  void getData() async {
+    Dio dio = Dio();
+
+    Map<String, String> body = {
+      "Authorization": "Bearer ${ref.read(tokenProvider.state).state}",
+    };
+
+    try {
+      // fetching rank
+      var url =
+          'http://$ipAddress:8000/hrm/employee/organization/${widget.id}/rank/';
+      Response response = await dio.get(url, options: Options(headers: body));
+      rank = response.data['name'];
+      setState(() {});
+
+      // fetching team
+      url =
+          'http://$ipAddress:8000/hrm/employee/organization/${widget.id}/team/';
+      response = await dio.get(url, options: Options(headers: body));
+      team = response.data['name'];
+
+      setState(() {});
+    } catch (error) {
+      print('error');
+      print(error);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final completionRate =
-        (70 + Random().nextDouble() * (100 - 70)).toStringAsFixed(2);
+
     return Card(
       color: Theme.of(context).brightness == Brightness.dark
           ? Colors.white12
@@ -35,22 +84,52 @@ class EmployeeOrganizationCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              tagLine,
+              'Your Rank: ${rank ?? ''}',
               style: TextStyle(
                 fontSize:
                     getResponsiveFontSize(context, width > 700 ? 1.75 : 6),
               ),
             ),
             Text(
-              organizationName,
+              widget.organizationName,
               style: GoogleFonts.inter(
                 fontSize: getResponsiveFontSize(context, width > 700 ? 3.5 : 9),
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const Text(
-              'Team: Machine Learning',
-              style: TextStyle(fontSize: 18),
+            Text(
+              'Team: ${team ?? ''}',
+              style: const TextStyle(fontSize: 18),
+            ),
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.red[400],
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: TextButton(
+                onPressed: () async {
+                  await showDialog<void>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      content: LeaveOrganization(
+                        organizationName: widget.organizationName,
+                        organizationId: widget.id,
+                      ),
+                    ),
+                  );
+
+                  widget.refresh();
+                },
+                child: Text(
+                  "Leave Organization",
+                  style: TextStyle(
+                    fontSize:
+                        getResponsiveFontSize(context, width > 700 ? 1.3 : 4.5),
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ),
           ],
         ),

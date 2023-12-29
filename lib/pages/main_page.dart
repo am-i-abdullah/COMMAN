@@ -1,10 +1,8 @@
 import 'package:comman/api/data_fetching/get_user.dart';
-import 'package:comman/models/user_model.dart';
+import 'package:comman/pages/user_settings.dart';
 import 'package:comman/provider/user_provider.dart';
 import 'package:comman/utils/constants.dart';
-import 'package:comman/pages/subpages/crm.dart';
 import 'package:comman/pages/subpages/notifications.dart';
-import 'package:comman/pages/subpages/hrm.dart';
 import 'package:comman/pages/subpages/home.dart';
 import 'package:comman/widgets/sidebar.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +44,9 @@ class _HomePageState extends ConsumerState<HomePage> {
           toolbarHeight: 60,
 
           title: InkWell(
-            highlightColor: null,
+            splashColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+            highlightColor: Colors.transparent,
             onTap: () {
               setState(() {
                 getUser(token: tokenToken);
@@ -82,27 +82,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                     },
                     icon: const Icon(Icons.home),
                   ),
-
-                  // HRM
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        content = const HRM();
-                      });
-                    },
-                    icon: const Icon(Icons.group),
-                  ),
-
-                  // CRM buttom
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        content = const CRM();
-                      });
-                    },
-                    icon: const Icon(Icons.widgets),
-                  ),
-
                   // Notifications button
                   IconButton(
                     onPressed: () {
@@ -111,6 +90,15 @@ class _HomePageState extends ConsumerState<HomePage> {
                       });
                     },
                     icon: const Icon(Icons.notifications),
+                  ),
+                  // user settings button
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        content = const UserSettings();
+                      });
+                    },
+                    icon: const Icon(Icons.settings),
                   ),
 
                   // user name
@@ -152,12 +140,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                       text: 'Home',
                     ),
                     Tab(
-                      icon: Icon(Icons.group),
-                      text: 'HRM',
-                    ),
-                    Tab(
-                      icon: Icon(Icons.widgets),
-                      text: 'CRM',
+                      icon: Icon(Icons.settings),
+                      text: 'Settings',
                     ),
                     Tab(
                       icon: Icon(Icons.notifications),
@@ -178,8 +162,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             : const TabBarView(children: [
                 // mobile view
                 Home(),
-                HRM(),
-                CRM(),
+                UserSettings(),
                 Notifications(),
               ]),
       ),

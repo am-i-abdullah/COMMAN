@@ -10,6 +10,8 @@ class UserSettings extends StatefulWidget {
 class _UserSettingsState extends State<UserSettings> {
   @override
   Widget build(BuildContext context) {
-    return const Column();
+    return const Column(
+      children: [Text("settings")],
+    );
   }
 }

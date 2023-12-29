@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 
 Future<List<dynamic>?> getOrgPendingTasks({
   required String token,
+  required String id,
 }) async {
   Map<String, String> body = {
     "Authorization": "Bearer $token",
@@ -11,7 +12,7 @@ Future<List<dynamic>?> getOrgPendingTasks({
   print('fetching organization pending tasks');
 
   var url =
-      'http://$ipAddress:8000/hrm/employee/organization/3/organization-tasks/';
+      'http://$ipAddress:8000/hrm/employee/organization/$id/organization-tasks/';
   Dio dio = Dio();
 
   try {

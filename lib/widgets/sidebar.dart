@@ -17,16 +17,25 @@ class _SideBarState extends ConsumerState<SideBar> {
     final width = MediaQuery.of(context).size.width;
 
     return Drawer(
-      width: width > 600 ? width * 0.25 : width * 0.875,
-      child: ListView(
+      width: width > 500 ? 350 : width * 0.875,
+      child: Column(
         children: [
           Stack(
             children: [
               UserAccountsDrawerHeader(
                 margin: const EdgeInsets.only(bottom: 0),
-                accountName:
-                    Text('${userDetails.firstname} ${userDetails.lastname}'),
-                accountEmail: const Text('timmmy@gmail.com'),
+                accountName: Text(
+                  '${userDetails.firstname} ${userDetails.lastname}',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
+                ),
+                accountEmail: Text(
+                  'timmmy@gmail.com',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
+                ),
                 currentAccountPicture: CircleAvatar(
                   child: ClipOval(
                     child: Image.network(
@@ -53,7 +62,7 @@ class _SideBarState extends ConsumerState<SideBar> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onBackground,
                 ),
               ),
             ],
@@ -123,17 +132,17 @@ class _SideBarState extends ConsumerState<SideBar> {
             title: const Text("Notifications"),
             onTap: () {},
           ),
+
           const Expanded(child: SizedBox()),
-          IconButton(
-            onPressed: () async {
+          ListTile(
+            trailing: const Icon(Icons.logout),
+            title: const Text("Logout"),
+            onTap: () async {
               ref.read(tokenProvider.state).state = null;
               await widget.storage.write(key: 'token', value: null);
-
-              print('logged out successfully');
-              print(widget.storage.read(key: 'token'));
             },
-            icon: const Icon(Icons.logout),
           ),
+          const SizedBox(height: 5),
         ],
       ),
     );

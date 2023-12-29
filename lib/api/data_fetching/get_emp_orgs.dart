@@ -8,8 +8,7 @@ Future<List<dynamic>?> getEmployeeOrgs({
     "Authorization": "Bearer $token",
   };
 
-  print('im here');
-
+  print('orgs you are employee in \n\n\n\n\n');
   var url = 'http://$ipAddress:8000/hrm/employee/organizations/';
   Dio dio = Dio();
 

@@ -1,3 +1,4 @@
+import 'package:comman/widgets/customer/dismiss_customer_task.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -97,8 +98,16 @@ class CustomerTaskCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: TextButton(
-                        onPressed: () {
-                          deleteTask(int.parse(id));
+                        onPressed: () async {
+                          await showDialog<void>(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              content: DismissCustomerTask(
+                                taskId: id,
+                                deleteTask: deleteTask,
+                              ),
+                            ),
+                          );
                         },
                         child: const Text(
                           "Dismiss Task",

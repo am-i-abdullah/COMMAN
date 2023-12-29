@@ -44,12 +44,12 @@ class _UserOrganizationsState extends ConsumerState<EmployeeOrganizations> {
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: width > 900
+        crossAxisCount: width > 1100
             ? 3
-            : width > 700
+            : width > 720
                 ? 2
                 : 1,
-        childAspectRatio: width < 500 ? 1.25 : 1.75,
+        childAspectRatio: width < 500 ? 1.6 : 1.75,
         crossAxisSpacing: 0,
         mainAxisSpacing: 12,
       ),
@@ -60,6 +60,7 @@ class _UserOrganizationsState extends ConsumerState<EmployeeOrganizations> {
                   id: org['id'].toString(),
                   tagLine: "rank",
                   organizationName: org['name'],
+                  refresh: loadData,
                 ),
             ]
           : [if (width > 700) const SizedBox(), content],
