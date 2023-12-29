@@ -25,33 +25,36 @@ class _HomeState extends State<Home> {
             const SizedBox(height: 20),
 
             Text(
-              'Your Organizations!',
+              'Your Organizations',
               textAlign: TextAlign.start,
-              style: GoogleFonts.lato(
-                fontSize: 22,
+              style: GoogleFonts.inter(
+                fontSize: 30,
+                fontWeight: FontWeight.w500,
               ),
             ),
             const SizedBox(height: 20),
             const UserOrganizations(),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 40),
             Text(
-              'Other Organizatoins you are part of!',
+              'Employed in ',
               textAlign: TextAlign.start,
-              style: GoogleFonts.lato(
-                fontSize: 22,
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w500,
+                fontSize: 30,
               ),
             ),
             const SizedBox(height: 20),
 
             const EmployeeOrganizations(),
-            const SizedBox(height: 20),
+            const SizedBox(height: 40),
 
             Text(
-              'Overall Performance!',
+              'Your Success Rate',
               textAlign: TextAlign.start,
-              style: GoogleFonts.lato(
-                fontSize: 22,
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w500,
+                fontSize: 30,
               ),
             ),
             const SizedBox(height: 20),
@@ -80,11 +83,12 @@ class _HomeState extends State<Home> {
               ),
 
             // Member Statistics
-            const SizedBox(height: 30),
+            const SizedBox(height: 40),
             Text(
               'Some Member Statistics',
               style: GoogleFonts.lato(
-                fontSize: 22,
+                fontSize: 30,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],

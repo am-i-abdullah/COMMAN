@@ -35,9 +35,7 @@ class _RevenueChartState extends State<RevenueChart> {
             ),
           ),
         ),
-        SizedBox(
-          width: 60,
-          height: 34,
+        Container(
           child: TextButton(
             onPressed: () {
               setState(() {
@@ -45,10 +43,10 @@ class _RevenueChartState extends State<RevenueChart> {
               });
             },
             child: Text(
-              'avg',
+              'Average',
               style: TextStyle(
-                fontSize: 12,
-                color: showAvg ? Colors.white.withOpacity(0.5) : Colors.white,
+                fontSize: 15,
+                color: Colors.red[250],
               ),
             ),
           ),

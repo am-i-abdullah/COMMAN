@@ -1,5 +1,6 @@
 import 'package:comman/provider/token_provider.dart';
 import 'package:comman/utils/constants.dart';
+import 'package:comman/widgets/employee%20organization/emp_org_main_page.dart';
 import 'package:comman/widgets/organization/leave_organization.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -77,61 +78,79 @@ class _EmployeeOrganizationCardState
           ? Colors.white12
           : Colors.white54,
       shadowColor: Colors.black,
-      child: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Your Rank: ${rank ?? ''}',
-              style: TextStyle(
-                fontSize:
-                    getResponsiveFontSize(context, width > 700 ? 1.75 : 6),
+      child: InkWell(
+        hoverColor: Colors.transparent,
+        splashColor: Colors.transparent,
+        borderRadius: const BorderRadius.all(Radius.circular(9)),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EmpOrgMainPage(
+                orgId: widget.id,
+                name: widget.organizationName,
+                rank: rank,
               ),
             ),
-            Text(
-              widget.organizationName,
-              style: GoogleFonts.inter(
-                fontSize: getResponsiveFontSize(context, width > 700 ? 3.5 : 9),
-                fontWeight: FontWeight.w600,
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Your Rank: ${rank ?? ''}',
+                style: TextStyle(
+                  fontSize:
+                      getResponsiveFontSize(context, width > 700 ? 1.75 : 6),
+                ),
               ),
-            ),
-            Text(
-              'Team: ${team ?? ''}',
-              style: const TextStyle(fontSize: 18),
-            ),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.red[400],
-                borderRadius: BorderRadius.circular(8.0),
+              Text(
+                widget.organizationName,
+                style: GoogleFonts.inter(
+                  fontSize:
+                      getResponsiveFontSize(context, width > 700 ? 3.5 : 9),
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-              child: TextButton(
-                onPressed: () async {
-                  await showDialog<void>(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      content: LeaveOrganization(
-                        organizationName: widget.organizationName,
-                        organizationId: widget.id,
+              Text(
+                'Team: ${team ?? ''}',
+                style: const TextStyle(fontSize: 18),
+              ),
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.red[400],
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: TextButton(
+                  onPressed: () async {
+                    await showDialog<void>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        content: LeaveOrganization(
+                          organizationName: widget.organizationName,
+                          organizationId: widget.id,
+                        ),
                       ),
-                    ),
-                  );
+                    );
 
-                  widget.refresh();
-                },
-                child: Text(
-                  "Leave Organization",
-                  style: TextStyle(
-                    fontSize:
-                        getResponsiveFontSize(context, width > 700 ? 1.3 : 4.5),
-                    color: Colors.white,
+                    widget.refresh();
+                  },
+                  child: Text(
+                    "Leave Organization",
+                    style: TextStyle(
+                      fontSize: getResponsiveFontSize(
+                          context, width > 700 ? 1.3 : 4.5),
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

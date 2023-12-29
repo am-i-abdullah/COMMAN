@@ -17,30 +17,49 @@ class UpdateCard extends StatelessWidget {
           right: 20,
           bottom: 20,
         ),
-        child: const Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               '20-Dec-2023',
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(
+                fontSize: 20,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
+              ),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 20),
             Text(
               'XXX-234',
               style: TextStyle(
                 fontSize: 40,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w900,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
               ),
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 10),
             Text(
               'Customers Services Left',
-              style: TextStyle(fontSize: 25),
+              style: TextStyle(
+                fontSize: 25,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
+                fontWeight: FontWeight.w700,
+              ),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             Text(
               '10% more than last month.',
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(
+                fontSize: 20,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
+              ),
             ),
           ],
         ),

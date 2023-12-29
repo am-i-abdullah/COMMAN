@@ -1,26 +1,27 @@
-import 'package:comman/pages/subpages/crm.dart';
-import 'package:comman/pages/subpages/hrm.dart';
 import 'package:comman/pages/subpages/notifications.dart';
+import 'package:comman/widgets/employee%20organization/emp_crm.dart';
+import 'package:comman/widgets/employee%20organization/emp_hrm.dart';
 
-import 'package:comman/widgets/organization/org_dashboard.dart';
 import 'package:comman/widgets/sidebar.dart';
 import 'package:flutter/material.dart';
 
-class Organization extends StatefulWidget {
-  const Organization({
+class EmpOrgMainPage extends StatefulWidget {
+  const EmpOrgMainPage({
     super.key,
-    required this.id,
+    required this.orgId,
     required this.name,
+    required this.rank,
   });
 
-  final String id;
+  final String orgId;
   final String name;
+  final String rank;
 
   @override
-  State<Organization> createState() => _OrganizationState();
+  State<EmpOrgMainPage> createState() => _EmpOrgMainPageState();
 }
 
-class _OrganizationState extends State<Organization> {
+class _EmpOrgMainPageState extends State<EmpOrgMainPage> {
   var content;
 
   @override
@@ -37,7 +38,7 @@ class _OrganizationState extends State<Organization> {
           onTap: () {
             setState(
               () {
-                content = OrganizationDashboard(id: widget.id);
+                content = EmployeeHRM(orgId: widget.orgId);
               },
             );
           },
@@ -63,23 +64,29 @@ class _OrganizationState extends State<Organization> {
           IconButton(
             onPressed: () {
               setState(() {
-                content = const HRM();
+                content = EmployeeHRM(
+                  orgId: widget.orgId,
+                );
               });
             },
             icon: const Icon(Icons.group),
           ),
 
           // CRM buttom
-          IconButton(
-            onPressed: () {
-              setState(() {
-                content = CRM(
-                  organizationId: widget.id,
-                );
-              });
-            },
-            icon: const Icon(Icons.widgets),
-          ),
+          if (widget.rank == 'CFO' ||
+              widget.rank == 'CEO' ||
+              widget.rank == 'Director' ||
+              widget.rank == 'Assistant Director')
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  content = EmployeeCRM(
+                    organizationId: widget.orgId,
+                  );
+                });
+              },
+              icon: const Icon(Icons.widgets),
+            ),
 
           // Notifications button
           IconButton(
@@ -96,10 +103,7 @@ class _OrganizationState extends State<Organization> {
         //   onPressed: () => Navigator.pop(context),
         // ),
       ),
-      body: content ?? OrganizationDashboard(id: widget.id),
-      backgroundColor: Theme.of(context).brightness == Brightness.dark
-          ? Theme.of(context).colorScheme.background
-          : Colors.white54,
+      body: content ?? EmployeeHRM(orgId: widget.orgId),
     );
   }
 }

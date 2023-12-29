@@ -4,19 +4,18 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class DismissOrganizationTask extends ConsumerStatefulWidget {
-  const DismissOrganizationTask({
+class DismissEmployeeTask extends ConsumerStatefulWidget {
+  const DismissEmployeeTask({
     super.key,
     required this.taskId,
   });
   final String taskId;
   @override
-  ConsumerState<DismissOrganizationTask> createState() =>
+  ConsumerState<DismissEmployeeTask> createState() =>
       _DismissOrganizationTaskState();
 }
 
-class _DismissOrganizationTaskState
-    extends ConsumerState<DismissOrganizationTask> {
+class _DismissOrganizationTaskState extends ConsumerState<DismissEmployeeTask> {
   bool isLoading = false;
 
   @override
@@ -56,7 +55,7 @@ class _DismissOrganizationTaskState
                       try {
                         Dio dio = Dio();
                         await dio.delete(
-                          'http://$ipAddress:8000/hrm/task/${widget.taskId}/',
+                          'http://$ipAddress:8000/hrm/duty/${widget.taskId}/',
                           options: Options(
                             headers: {
                               "Authorization":
