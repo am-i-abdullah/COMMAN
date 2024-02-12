@@ -1,7 +1,6 @@
 import 'package:comman/pages/organization.dart';
 import 'package:comman/provider/token_provider.dart';
 import 'package:comman/utils/constants.dart';
-import 'package:comman/utils/responsive_font.dart';
 import 'package:comman/widgets/organization/transfer_organization_control.dart';
 import 'package:comman/widgets/organization/update_organization_details.dart';
 import 'package:dio/dio.dart';
@@ -45,17 +44,14 @@ class _OrganizationCardState extends ConsumerState<OrganizationCard> {
   void loadData() async {
     Dio dio = Dio();
 
-    Map<String, String> body = {
-      "Authorization": "Bearer ${ref.read(tokenProvider.state).state}",
-    };
-
     try {
       // fetching total employees
       var url =
           'http://$ipAddress:8000/hrm/organization/${widget.id}/employees/';
-      Response response = await dio.get(url, options: Options(headers: body));
-
-      print(response.data);
+      Response response = await dio.get(
+        url,
+        options: getOpts(ref),
+      );
 
       response.data.forEach((emp) {
         orgEmployees[emp['user']['id']] = emp['user']['username'];

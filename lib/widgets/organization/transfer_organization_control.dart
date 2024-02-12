@@ -1,5 +1,7 @@
-import 'package:comman/provider/token_provider.dart';
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:comman/utils/constants.dart';
+import 'package:comman/widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,7 +20,7 @@ class TransferOrganizationControl extends ConsumerStatefulWidget {
 }
 
 class _NewTaskState extends ConsumerState<TransferOrganizationControl> {
-  String newOwner = '';
+  var newOwner;
   bool isLoading = false;
 
   @override
@@ -34,6 +36,10 @@ class _NewTaskState extends ConsumerState<TransferOrganizationControl> {
           SizedBox(
             width: double.infinity,
             child: DropdownButton(
+              padding: const EdgeInsets.all(5),
+              borderRadius: BorderRadius.circular(10),
+              value: newOwner,
+              isExpanded: true,
               hint: const Text("Transfer ownership to: "),
               items: widget.employees.values
                   .map((username) => DropdownMenuItem<String>(
@@ -42,6 +48,7 @@ class _NewTaskState extends ConsumerState<TransferOrganizationControl> {
                       ))
                   .toList(),
               onChanged: (value) {
+                setState(() {});
                 if (value == null) return;
                 newOwner = value;
               },
@@ -63,6 +70,7 @@ class _NewTaskState extends ConsumerState<TransferOrganizationControl> {
                   child: TextButton(
                     onPressed: () async {
                       if (newOwner == '' || newOwner.isEmpty) return;
+                      showSnackBar(context, 'Select valid Owner');
                       setState(() {
                         isLoading = true;
                       });
@@ -81,19 +89,23 @@ class _NewTaskState extends ConsumerState<TransferOrganizationControl> {
                         var response = await dio.patch(
                           'http://$ipAddress:8000/hrm/organization/${widget.organizationId}/',
                           data: body,
-                          options: Options(
-                            headers: {
-                              "Authorization":
-                                  "Bearer ${ref.read(tokenProvider.state).state}",
-                            },
-                          ),
+                          options: getOpts(ref),
                         );
-
-                        print(response);
+                        if (response.statusCode == 200 ||
+                            response.statusCode == 201) {
+                          showSnackBar(
+                              context, 'Good Luck for your next Endeavours');
+                        }
                         Navigator.pop(context);
                       } catch (error) {
+                        showSnackBar(
+                            context, 'Good Luck for your next Endeavours');
                         print('error');
                         print(error);
+                      } finally {
+                        setState(() {
+                          isLoading = false;
+                        });
                       }
                     },
                     child: const Text(

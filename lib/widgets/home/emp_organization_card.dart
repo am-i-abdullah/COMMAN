@@ -1,4 +1,3 @@
-import 'package:comman/provider/token_provider.dart';
 import 'package:comman/utils/constants.dart';
 import 'package:comman/widgets/employee%20organization/emp_org_main_page.dart';
 import 'package:comman/widgets/organization/leave_organization.dart';
@@ -44,27 +43,28 @@ class _EmployeeOrganizationCardState
   void getData() async {
     Dio dio = Dio();
 
-    Map<String, String> body = {
-      "Authorization": "Bearer ${ref.read(tokenProvider.state).state}",
-    };
-
     try {
       // fetching rank
       var url =
           'http://$ipAddress:8000/hrm/employee/organization/${widget.id}/rank/';
-      Response response = await dio.get(url, options: Options(headers: body));
+      Response response = await dio.get(
+        url,
+        options: getOpts(ref),
+      );
       rank = response.data['name'];
       setState(() {});
 
       // fetching team
       url =
           'http://$ipAddress:8000/hrm/employee/organization/${widget.id}/team/';
-      response = await dio.get(url, options: Options(headers: body));
+      response = await dio.get(
+        url,
+        options: getOpts(ref),
+      );
       team = response.data['name'];
 
       setState(() {});
     } catch (error) {
-      print('error');
       print(error);
     }
   }

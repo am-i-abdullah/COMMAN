@@ -1,6 +1,7 @@
 import 'package:comman/widgets/home/employee_organizations.dart';
 import 'package:comman/widgets/home/update_card.dart';
 import 'package:comman/widgets/home/user_organizations.dart';
+import 'package:comman/widgets/user/user_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -17,13 +18,27 @@ class _HomeState extends State<Home> {
     final width = MediaQuery.of(context).size.width;
 
     return Padding(
-      padding: const EdgeInsets.only(left: 18, right: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 18),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 20),
 
+            // user all notifications
+            Text(
+              'Recent Notifications',
+              textAlign: TextAlign.start,
+              style: GoogleFonts.inter(
+                fontSize: 30,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 15),
+            const UserNotifications(only3: true),
+
+            // organizations owned by the user
+            const SizedBox(height: 20),
             Text(
               'Your Organizations',
               textAlign: TextAlign.start,
@@ -32,9 +47,10 @@ class _HomeState extends State<Home> {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
             const UserOrganizations(),
 
+            // oranizations in which user is employed
             const SizedBox(height: 40),
             Text(
               'Employed in ',
@@ -84,13 +100,6 @@ class _HomeState extends State<Home> {
 
             // Member Statistics
             const SizedBox(height: 40),
-            Text(
-              'Some Member Statistics',
-              style: GoogleFonts.lato(
-                fontSize: 30,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
           ],
         ),
       ),

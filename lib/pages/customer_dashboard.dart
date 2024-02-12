@@ -1,7 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:comman/provider/theme_provider.dart';
 import 'package:comman/provider/token_provider.dart';
 import 'package:comman/utils/constants.dart';
 import 'package:comman/widgets/customer/customer_task_card.dart';
 import 'package:comman/widgets/customer/new_task.dart';
+import 'package:comman/widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,14 +53,9 @@ class _CustomerDashboardState extends ConsumerState<CustomerDashboard> {
       print('getting all tasks');
       var response = await dio.get(
         'http://$ipAddress:8000/crm/customer/tasks/${widget.customerId}/',
-        options: Options(
-          headers: {
-            "Authorization": "Bearer ${ref.read(tokenProvider.state).state}",
-          },
-        ),
+        options: getOpts(ref),
       );
 
-      print(response.data);
       if (response.data.toString() == '[]') {
         content = Center(
           child: TextButton(
@@ -64,12 +63,12 @@ class _CustomerDashboardState extends ConsumerState<CustomerDashboard> {
             child: Container(
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(5)),
               padding: const EdgeInsets.all(15),
-              child: const Text(
+              child: Text(
                 "There are no Tasks, \nClick me to Add new Task",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20,
-                  color: Colors.white,
+                  color: ref.read(themeProvider) ? Colors.black : Colors.white,
                 ),
               ),
             ),
@@ -109,14 +108,9 @@ class _CustomerDashboardState extends ConsumerState<CustomerDashboard> {
       print('deleting the task');
       var response = await dio.delete(
         'http://$ipAddress:8000/hrm/task/$id/',
-        options: Options(
-          headers: {
-            "Authorization": "Bearer ${ref.read(tokenProvider.state).state}",
-          },
-        ),
+        options: getOpts(ref),
       );
 
-      print(response.data);
       tasks = response.data;
     } catch (error) {
       print('error');
@@ -135,20 +129,17 @@ class _CustomerDashboardState extends ConsumerState<CustomerDashboard> {
       print('updating the task');
       var response = await dio.patch(
         'http://$ipAddress:8000/hrm/task/$id/',
-        options: Options(
-          headers: {
-            "Authorization": "Bearer ${ref.read(tokenProvider.state).state}",
-          },
-        ),
+        options: getOpts(ref),
         data: {
           'completion_status': !status,
         },
       );
 
-      print(response.data);
       tasks = response.data;
+      showSnackBar(context, 'Task Status Updaed Successfully');
     } catch (error) {
-      print('error');
+      showSnackBar(
+          context, 'Sorry, Something went wrong, Unable to update the status');
       print(error);
     }
     tasks = '[]';

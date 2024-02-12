@@ -1,11 +1,15 @@
 import 'package:comman/provider/token_provider.dart';
 import 'package:comman/provider/user_provider.dart';
+import 'package:comman/widgets/employee%20organization/hrm/add_employee_organization.dart';
+import 'package:comman/widgets/employee%20organization/hrm/create_team.dart';
+import 'package:comman/widgets/employee%20organization/hrm/fire_employee.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SideBar extends ConsumerStatefulWidget {
-  const SideBar({super.key, required this.storage});
-  final storage;
+  const SideBar({super.key, required this.orgId});
+  final String orgId;
   @override
   ConsumerState<SideBar> createState() => _SideBarState();
 }
@@ -31,7 +35,7 @@ class _SideBarState extends ConsumerState<SideBar> {
                   ),
                 ),
                 accountEmail: Text(
-                  'timmmy@gmail.com',
+                  userDetails.email,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onBackground,
                   ),
@@ -74,26 +78,52 @@ class _SideBarState extends ConsumerState<SideBar> {
             leading: const Icon(Icons.group),
             title: const Text('HRM'),
             children: [
+              // visible only if CEO, CFO, CTO
               ListTile(
-                leading: const Icon(Icons.bluetooth),
-                title: const Text("one"),
-                onTap: () {},
+                leading: const Icon(Icons.add),
+                title: const Text("Add Employee"),
+                onTap: () async {
+                  await showDialog<void>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      content: NewOrganizationEmployee(
+                        organizationId: widget.orgId,
+                      ),
+                    ),
+                  );
+                },
               ),
+              // visible only if CEO, CFO, CTO
               ListTile(
-                leading: const Icon(Icons.wifi),
-                title: const Text("two"),
-                onTap: () {},
+                leading: const Icon(Icons.delete_forever),
+                title: const Text("Fire Employee"),
+                onTap: () async {
+                  await showDialog<void>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      content: FireEmployee(
+                        organizationId: widget.orgId,
+                      ),
+                    ),
+                  );
+                },
               ),
+              // visible only if CEO, CFO, CTO
               ListTile(
-                leading: const Icon(Icons.three_g_mobiledata),
-                title: const Text("three"),
-                onTap: () {},
+                leading: const Icon(Icons.add),
+                title: const Text("Add Team"),
+                onTap: () async {
+                  await showDialog<void>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      content: NewTeam(
+                        organizationId: widget.orgId,
+                      ),
+                    ),
+                  );
+                },
               ),
-              ListTile(
-                leading: const Icon(Icons.four_g_mobiledata),
-                title: const Text("four"),
-                onTap: () {},
-              ),
+
               ListTile(
                 leading: const Icon(Icons.five_g),
                 title: const Text("five"),
@@ -139,7 +169,8 @@ class _SideBarState extends ConsumerState<SideBar> {
             title: const Text("Logout"),
             onTap: () async {
               ref.read(tokenProvider.state).state = null;
-              await widget.storage.write(key: 'token', value: null);
+              await const FlutterSecureStorage()
+                  .write(key: 'token', value: null);
             },
           ),
           const SizedBox(height: 5),

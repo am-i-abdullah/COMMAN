@@ -1,25 +1,22 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:comman/provider/token_provider.dart';
 import 'package:comman/utils/constants.dart';
 import 'package:comman/widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class DismissOrganizationTask extends ConsumerStatefulWidget {
-  const DismissOrganizationTask({
+class DeleteUserNotification extends ConsumerStatefulWidget {
+  const DeleteUserNotification({
     super.key,
-    required this.taskId,
+    required this.notificationId,
   });
-  final String taskId;
+  final int notificationId;
   @override
-  ConsumerState<DismissOrganizationTask> createState() =>
-      _DismissOrganizationTaskState();
+  ConsumerState<DeleteUserNotification> createState() => _UserAccountState();
 }
 
-class _DismissOrganizationTaskState
-    extends ConsumerState<DismissOrganizationTask> {
+class _UserAccountState extends ConsumerState<DeleteUserNotification> {
   bool isLoading = false;
 
   @override
@@ -54,19 +51,25 @@ class _DismissOrganizationTaskState
                         isLoading = true;
                       });
 
-                      print('sending delete task request... ');
+                      print('sending delete notification request... ');
 
                       try {
                         Dio dio = Dio();
-                        await dio.delete(
-                          'http://$ipAddress:8000/hrm/task/${widget.taskId}/',
+                        Response response = await dio.delete(
+                          'http://$ipAddress:8000/hrm/notification/${widget.notificationId}/',
                           options: getOpts(ref),
                         );
-                        showSnackBar(
-                            context, 'Task deleted from the to do list.');
-                        Navigator.pop(context);
+
+                        // upon deleted successfully
+                        if (response.statusCode == 204) {
+                          Navigator.pop(context);
+                          showSnackBar(context,
+                              'Deleted Successfully, Thanks for freeing storage!');
+                        }
                       } catch (error) {
-                        showSnackBar(context, 'Sorry, something went wrong.');
+                        showSnackBar(context, 'Something went wrong!');
+
+                        print('error');
                         print(error);
                       } finally {
                         setState(() {

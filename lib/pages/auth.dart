@@ -1,22 +1,20 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 import 'package:comman/api/data_fetching/get_user.dart';
 import 'package:comman/api/auth/register_user.dart';
 import 'package:comman/api/auth/user_auth.dart';
+import 'package:comman/provider/theme_provider.dart';
 import 'package:comman/provider/token_provider.dart';
 import 'package:comman/provider/user_provider.dart';
 import 'package:comman/widgets/image_picker.dart';
+import 'package:comman/widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
-  const AuthScreen(
-      {super.key,
-      required this.changeTheme,
-      required this.currentTheme,
-      required this.storage});
+  const AuthScreen({super.key, required this.storage});
 
-  final void Function() changeTheme;
-  final currentTheme;
   final storage;
 
   @override
@@ -31,7 +29,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   // switching between login and signup content
   var isLogin = true;
   // if it is busy in uploading the credentials
-  var isBusy = false;
+  var isLoading = false;
 
   // user credentials and meta data
   var userName = "";
@@ -53,13 +51,14 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     try {
       // now busy in backend
       setState(() {
-        isBusy = true;
+        isLoading = true;
       });
 
       // registeration mode
       if (!isLogin) {
         print('registering user...');
         await registerUser(
+          context: context,
           username: userName,
           password: userPassword,
           email: userEmail,
@@ -74,43 +73,42 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         password: userPassword,
       );
 
-      if (token.isEmpty) {
-        print('nothing.............');
+      if (token.isEmpty && isLogin) {
+        showSnackBar(context, 'Un-Authorized User!');
+        setState(() {
+          isLoading = false;
+        });
         return;
       }
 
-      ref.read(tokenProvider.state).state = token;
-      widget.storage.write(key: 'token', value: token);
-
+      // accessing user based upon token
       var userDetails = await getUser(token: token);
 
-      ref.read(userProvider).username = userDetails['username'];
-      ref.read(userProvider).firstname = userDetails['first_name'];
-      ref.read(userProvider).lastname = userDetails['last_name'];
-      ref.read(userProvider).email = userDetails['email'];
+      ref.read(userProvider.notifier).state.username = userDetails['username'];
+      ref.read(userProvider.notifier).state.firstname =
+          userDetails['first_name'];
+      ref.read(userProvider.notifier).state.lastname = userDetails['last_name'];
+      ref.read(userProvider.notifier).state.email = userDetails['email'];
+      ref.read(userProvider.notifier).state.id = userDetails['id'];
 
-      print(userDetails);
+      ref.read(tokenProvider.notifier).state = token;
+      await widget.storage.write(key: 'token', value: token);
 
-      print(ref.read(userProvider.state).state.firstname);
       setState(() {
-        isBusy = false;
+        isLoading = false;
       });
 
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              isLogin ? "Login Successfully" : "Account created Successfuly"),
-          duration: const Duration(seconds: 3),
-        ),
-      );
+      showSnackBar(context,
+          isLogin ? "Login Successfully" : "Account created Successfuly");
     }
     // incase things go wrong
     catch (error) {
+      if (isLogin) showSnackBar(context, 'Something went wrong');
+      print('straight...');
       print(error);
 
       setState(() {
-        isBusy = false;
+        isLoading = false;
       });
     }
   }
@@ -120,9 +118,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     final width = MediaQuery.of(context).size.width;
 
     var logoContainer = Container(
-      width: 200,
+      width: 300,
       margin: const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 20),
-      child: Image.asset('assets/logo.png'),
+      child: Image.asset(!ref.read(themeProvider)
+          ? 'assets/logo.png'
+          : 'assets/logo_light.png'),
     );
 
     var authCard = Card(
@@ -175,7 +175,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     validator: (value) {
                       if (value == null ||
                           value.trim().isEmpty ||
-                          !value.contains("@")) {
+                          !value.contains("@") ||
+                          !value.contains(".com")) {
                         return "Please Enter Valid Email Address";
                       }
                       return null;
@@ -240,10 +241,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
                 const SizedBox(height: 20),
 
-                if (isBusy) const CircularProgressIndicator(),
+                if (isLoading) const CircularProgressIndicator(),
 
                 // signing in or signing up
-                if (!isBusy)
+                if (!isLoading)
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
@@ -254,7 +255,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                   ),
                 const SizedBox(height: 10),
                 // switching between signup and login mode
-                if (!isBusy)
+                if (!isLoading)
                   TextButton(
                     onPressed: () {
                       setState(() {
@@ -275,56 +276,44 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     );
 
     return Scaffold(
-      // backgroundColor: Theme.of(context).colorScheme.primary,
-      body: Center(
-        // to lift the content up, when keyboard appears
-        child: SingleChildScrollView(
-          child: width < 600
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    logoContainer,
-                    // form in card to take inputs for sing in / sign up
-                    authCard,
-                  ],
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    logoContainer,
-                    authCard,
-                  ],
-                ),
-        ),
+      body: Stack(
+        children: [
+          Center(
+            // to lift the content up, when keyboard appears
+            child: SingleChildScrollView(
+              child: width < 600
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        logoContainer,
+                        // form in card to take inputs for sing in / sign up
+                        authCard,
+                      ],
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        logoContainer,
+                        authCard,
+                      ],
+                    ),
+            ),
+          ),
+          Positioned(
+            top: 20,
+            right: 20,
+            child: IconButton(
+              icon: Icon(
+                ref.read(themeProvider) ? Icons.light_mode : Icons.dark_mode,
+              ),
+              onPressed: () {
+                toggleTheme(ref);
+              },
+            ),
+          )
+        ],
       ),
     );
   }
 }
-
-
-
-// sign up mode, creating account
-      // else {
-      //   final userCredential = await firebase.createUserWithEmailAndPassword(
-      //       email: userEmail, password: userPassword);
-
-      //   // targeting user_images folder on storage at firebase, if the user_images folder doesn't exist it will be created automatically
-      //   final storageRef = FirebaseStorage.instance
-      //       .ref()
-      //       .child('user_images')
-      //       .child('${userCredential.user!.uid}.jpg');
-
-      //   await storageRef.putFile(userImage!);
-      //   final imageURL = await storageRef.getDownloadURL();
-
-      //   await FirebaseFirestore.instance
-      //       .collection('users')
-      //       .doc(userCredential.user!.uid)
-      //       .set({
-      //     'username': userName,
-      //     'email': userEmail,
-      //     'image_url': imageURL,
-      //   });
-      // }
-      // incase things go well

@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:comman/api/auth/user_auth.dart';
+import 'package:comman/models/user_model.dart';
 import 'package:comman/provider/token_provider.dart';
 import 'package:comman/provider/user_provider.dart';
 import 'package:comman/utils/constants.dart';
@@ -8,21 +9,19 @@ import 'package:comman/widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class LeaveOrganization extends ConsumerStatefulWidget {
-  const LeaveOrganization({
+class DeleteAccount extends ConsumerStatefulWidget {
+  const DeleteAccount({
     super.key,
-    required this.organizationId,
-    required this.organizationName,
+    required this.userId,
   });
-  final String organizationId;
-  final String organizationName;
-
+  final int userId;
   @override
-  ConsumerState<LeaveOrganization> createState() => _LeaveOrganizationState();
+  ConsumerState<DeleteAccount> createState() => _UserAccountState();
 }
 
-class _LeaveOrganizationState extends ConsumerState<LeaveOrganization> {
+class _UserAccountState extends ConsumerState<DeleteAccount> {
   final formKey = GlobalKey<FormState>();
   bool isLoading = false;
   bool isPasswordVisible = true;
@@ -37,9 +36,9 @@ class _LeaveOrganizationState extends ConsumerState<LeaveOrganization> {
       width: 300,
       child: Column(
         children: [
-          Text(
-            'Enter Password to Leave ${widget.organizationName}?',
-            style: const TextStyle(fontSize: 16.5),
+          const Text(
+            'Enter Password to Delete Account?',
+            style: TextStyle(fontSize: 17),
           ),
           Form(
             key: formKey,
@@ -92,9 +91,11 @@ class _LeaveOrganizationState extends ConsumerState<LeaveOrganization> {
                           isLoading = true;
                         });
 
-                        Dio dio = Dio();
+                        print('sending delete account request... ');
 
                         try {
+                          // verifying user via password
+
                           var result = await userAuth(
                               username: ref.read(userProvider).username,
                               password: password);
@@ -107,23 +108,26 @@ class _LeaveOrganizationState extends ConsumerState<LeaveOrganization> {
                             return;
                           }
 
-                          // getting employee id
-                          var response = await dio.get(
-                            'http://$ipAddress:8000/hrm/organization/${widget.organizationId}/employees/me/',
+                          Dio dio = Dio();
+
+                          Response response = await dio.delete(
+                            'http://$ipAddress:8000/hrm/user/${widget.userId}/',
                             options: getOpts(ref),
                           );
 
-                          // deleting employee from org
-                          response = await dio.delete(
-                            'http://$ipAddress:8000/hrm/employee/${response.data['id']}/',
-                            options: getOpts(ref),
-                          );
-                          showSnackBar(
-                              context, 'Good Luck for your future Endeavours');
-                          Navigator.pop(context);
-                          return;
+                          // upon deleted successfully
+                          if (response.statusCode == 204) {
+                            Navigator.pop(context);
+                            const FlutterSecureStorage()
+                                .write(key: 'token', value: null);
+                            ref.watch(tokenProvider.notifier).state = null;
+                            ref.read(userProvider.notifier).state = User();
+                            showSnackBar(context,
+                                'Farewell for now; may your path be filled with joy.');
+                          }
                         } catch (error) {
-                          showSnackBar(context, 'Sorry, something went wrong');
+                          showSnackBar(context, 'Something went wrong!');
+                          print('error');
                           print(error);
                         } finally {
                           setState(() {
@@ -131,6 +135,10 @@ class _LeaveOrganizationState extends ConsumerState<LeaveOrganization> {
                           });
                         }
                       }
+
+                      setState(() {
+                        isLoading = false;
+                      });
                     },
                     child: const Text(
                       "Confirm",

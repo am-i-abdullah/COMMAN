@@ -1,10 +1,10 @@
 class User {
+  late int id;
   late String token;
   late String username;
   late String firstname;
   late String lastname;
   late String email;
-  late String profileURL;
 
   // Constructor
   User() {
@@ -13,6 +13,6 @@ class User {
     firstname = '';
     lastname = '';
     email = '';
-    profileURL = '';
+    id = 0;
   }
 }

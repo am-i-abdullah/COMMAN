@@ -1,4 +1,5 @@
 import 'package:comman/utils/constants.dart';
+import 'package:comman/widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 
 Future registerUser({
@@ -7,6 +8,7 @@ Future registerUser({
   required String email,
   required String firstName,
   required String lastName,
+  required context,
 }) async {
   Map<String, String> body = {
     "username": username,
@@ -23,11 +25,9 @@ Future registerUser({
   try {
     print('sending request');
     Response response = await dio.post(url, data: body);
-
-    print(response.data);
+    return response;
   } catch (error) {
-    print('error');
-    print(error);
+    showSnackBar(context, 'Something went wrong!');
   }
 }
 

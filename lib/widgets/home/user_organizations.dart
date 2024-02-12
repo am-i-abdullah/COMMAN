@@ -51,7 +51,7 @@ class _UserOrganizationsState extends ConsumerState<UserOrganizations> {
             : width > 720
                 ? 2
                 : 1,
-        childAspectRatio: width < 500 ? 1.4 : 1.75,
+        childAspectRatio: width < 500 ? 1.4 : 1.5,
         crossAxisSpacing: 0,
         mainAxisSpacing: 12,
       ),

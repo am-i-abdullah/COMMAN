@@ -1,25 +1,23 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:comman/provider/token_provider.dart';
 import 'package:comman/utils/constants.dart';
 import 'package:comman/widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class DismissOrganizationTask extends ConsumerStatefulWidget {
-  const DismissOrganizationTask({
+class RemoveTeamEmployee extends ConsumerStatefulWidget {
+  const RemoveTeamEmployee({
     super.key,
-    required this.taskId,
+    required this.orgId,
   });
-  final String taskId;
+
+  final int orgId;
   @override
-  ConsumerState<DismissOrganizationTask> createState() =>
-      _DismissOrganizationTaskState();
+  ConsumerState<RemoveTeamEmployee> createState() => _RemoveTeamEmployeeState();
 }
 
-class _DismissOrganizationTaskState
-    extends ConsumerState<DismissOrganizationTask> {
+class _RemoveTeamEmployeeState extends ConsumerState<RemoveTeamEmployee> {
   bool isLoading = false;
 
   @override
@@ -54,19 +52,35 @@ class _DismissOrganizationTaskState
                         isLoading = true;
                       });
 
-                      print('sending delete task request... ');
+                      print('sending remove employee request... ');
 
                       try {
                         Dio dio = Dio();
-                        await dio.delete(
-                          'http://$ipAddress:8000/hrm/task/${widget.taskId}/',
+
+                        Response response = await dio.get(
+                          'http://$ipAddress:8000/hrm/organization/${widget.orgId}/employees/me',
                           options: getOpts(ref),
                         );
+
+                        var employeeId = response.data['id'];
+
+                        final body = {
+                          'primary_team_id': null,
+                        };
+
+                        await dio.patch(
+                          'http://$ipAddress:8000/hrm/employee/$employeeId/',
+                          options: getOpts(ref),
+                          data: body,
+                        );
+
                         showSnackBar(
-                            context, 'Task deleted from the to do list.');
+                            context, 'Fired, Wishing best to the Employee');
+
                         Navigator.pop(context);
                       } catch (error) {
-                        showSnackBar(context, 'Sorry, something went wrong.');
+                        showSnackBar(context,
+                            'Something went wrong, cant remove employee.');
                         print(error);
                       } finally {
                         setState(() {

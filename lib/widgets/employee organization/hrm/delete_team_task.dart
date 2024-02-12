@@ -1,25 +1,22 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:comman/provider/token_provider.dart';
 import 'package:comman/utils/constants.dart';
 import 'package:comman/widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class DismissOrganizationTask extends ConsumerStatefulWidget {
-  const DismissOrganizationTask({
+class DismissTeamTask extends ConsumerStatefulWidget {
+  const DismissTeamTask({
     super.key,
     required this.taskId,
   });
   final String taskId;
   @override
-  ConsumerState<DismissOrganizationTask> createState() =>
-      _DismissOrganizationTaskState();
+  ConsumerState<DismissTeamTask> createState() => _DismissTeamTaskState();
 }
 
-class _DismissOrganizationTaskState
-    extends ConsumerState<DismissOrganizationTask> {
+class _DismissTeamTaskState extends ConsumerState<DismissTeamTask> {
   bool isLoading = false;
 
   @override
@@ -59,11 +56,10 @@ class _DismissOrganizationTaskState
                       try {
                         Dio dio = Dio();
                         await dio.delete(
-                          'http://$ipAddress:8000/hrm/task/${widget.taskId}/',
+                          'http://$ipAddress:8000/hrm/task-team/${widget.taskId}/',
                           options: getOpts(ref),
                         );
-                        showSnackBar(
-                            context, 'Task deleted from the to do list.');
+                        showSnackBar(context, 'Task deleted from the list.');
                         Navigator.pop(context);
                       } catch (error) {
                         showSnackBar(context, 'Sorry, something went wrong.');

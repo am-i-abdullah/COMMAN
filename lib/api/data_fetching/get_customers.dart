@@ -9,8 +9,6 @@ Future<List<dynamic>?> getCustomers({
     "Authorization": "Bearer $token",
   };
 
-  print('fetching organization customers');
-
   var url = 'http://$ipAddress:8000/crm/customers/organization/$id/';
   Dio dio = Dio();
 

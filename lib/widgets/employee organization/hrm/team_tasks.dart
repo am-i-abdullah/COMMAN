@@ -1,41 +1,32 @@
-import 'package:comman/api/data_fetching/emp_pending_task.dart';
-import 'package:comman/provider/token_provider.dart';
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:comman/utils/constants.dart';
-import 'package:comman/widgets/employee%20organization/dismiss_employee_task.dart';
+import 'package:comman/widgets/employee%20organization/hrm/delete_team_task.dart';
+import 'package:comman/widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-class EmployeePendingTasks extends ConsumerStatefulWidget {
-  const EmployeePendingTasks({super.key, required this.id});
-  final String id;
+class TeamTasks extends ConsumerStatefulWidget {
+  const TeamTasks({super.key, required this.tasks});
+  final tasks;
 
   @override
-  ConsumerState<EmployeePendingTasks> createState() => _PendingTasksState();
+  ConsumerState<TeamTasks> createState() => _TeamTasksState();
 }
 
-class _PendingTasksState extends ConsumerState<EmployeePendingTasks> {
-  var tasks;
+class _TeamTasksState extends ConsumerState<TeamTasks> {
   var content;
+
   @override
   void initState() {
     super.initState();
-    getData();
-  }
 
-  void getData() async {
-    content = const Center(child: CircularProgressIndicator());
-    print("\n\n\n\n\nid: ${widget.id}\n\n\n\n\n");
-    tasks = await getEmpPendingTasks(
-      token: ref.read(tokenProvider.state).state!,
-      id: widget.id,
-    );
-
-    if (tasks.toString() == '[]') {
+    if (widget.tasks.toString() == "[]") {
       content = const Center(
         child: Text(
-          "Dial 0320-0094995, \nGet your business promoted, \nyou'll see a list here!",
+          "Nothing Pending!",
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 19),
         ),
@@ -62,45 +53,42 @@ class _PendingTasksState extends ConsumerState<EmployeePendingTasks> {
         crossAxisSpacing: 0,
         mainAxisSpacing: 12,
       ),
-      children: (tasks != null && tasks.isNotEmpty)
+      children: (widget.tasks != null && widget.tasks.isNotEmpty)
           ? [
-              for (final task in tasks)
-                EmployeePendingTask(
+              for (final task in widget.tasks)
+                TeamTask(
                   id: task['id'].toString(),
-                  title: task['task']['title'],
+                  project: task['task']['title'],
                   width: width,
-                  date: task['date_due'],
-                  details: task['details'],
+                  date: task['task']['date_due'],
                   status: task['completion_status'],
-                  refresh: getData,
+                  responsibility: task['responsibility'],
                 ),
             ]
           : width > 800
-              ? [content, content]
+              ? [const SizedBox(), content]
               : [content],
     );
   }
 }
 
-class EmployeePendingTask extends ConsumerWidget {
-  const EmployeePendingTask({
+class TeamTask extends ConsumerWidget {
+  const TeamTask({
     super.key,
     required this.id,
-    required this.width,
-    required this.title,
+    required this.project,
     required this.date,
-    required this.details,
+    required this.responsibility,
     required this.status,
-    required this.refresh,
+    required this.width,
   });
 
   final double width;
-  final String title;
+  final String project;
   final String date;
-  final String details;
+  final String responsibility;
   final bool status;
   final String id;
-  final void Function() refresh;
 
   double getResponsiveFontSize(
       BuildContext context, double percentageOfScreenWidth) {
@@ -121,23 +109,25 @@ class EmployeePendingTask extends ConsumerWidget {
           : Colors.white54,
       shadowColor: Colors.black,
       child: Padding(
-        padding: const EdgeInsets.all(25),
+        padding: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               convertDate(),
-              style: TextStyle(fontSize: width < 600 ? 14 : 20),
+              style: TextStyle(fontSize: width < 600 ? 14 : 18),
             ),
             Text(
-              title,
+              project,
               softWrap: false,
               style: TextStyle(fontSize: width < 600 ? 20 : 35),
             ),
             Text(
-              "Detaisl: $details",
-              style: TextStyle(fontSize: width < 600 ? 12 : 18),
+              "Details: $responsibility",
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: width < 600 ? 12 : 15),
             ),
             Text(
               'Completion Status: ${status ? 'Completed' : 'Pending'}',
@@ -161,20 +151,16 @@ class EmployeePendingTask extends ConsumerWidget {
                         try {
                           print('updating the organization task');
                           var response = await dio.patch(
-                            'http://$ipAddress:8000/hrm/duty/$id/',
-                            options: Options(
-                              headers: {
-                                "Authorization":
-                                    "Bearer ${ref.read(tokenProvider.state).state!}",
-                              },
-                            ),
+                            'http://$ipAddress:8000/hrm/task-team/$id/',
+                            options: getOpts(ref),
                             data: {
                               'completion_status': !status,
                             },
                           );
-                          refresh();
-                          print(response.data);
+                          showSnackBar(context, 'Task Updated Successfully!');
                         } catch (error) {
+                          showSnackBar(context,
+                              'Sorry, unable to change status, something went wrong.');
                           print('error');
                           print(error);
                         }
@@ -198,13 +184,11 @@ class EmployeePendingTask extends ConsumerWidget {
                         await showDialog<void>(
                           context: context,
                           builder: (context) => AlertDialog(
-                            content: DismissEmployeeTask(
+                            content: DismissTeamTask(
                               taskId: id,
                             ),
                           ),
                         );
-
-                        refresh();
                       },
                       child: const Text(
                         "Dismiss Task",

@@ -1,5 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:comman/provider/token_provider.dart';
 import 'package:comman/utils/constants.dart';
+import 'package:comman/widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -56,21 +59,21 @@ class _DismissOrganizationTaskState extends ConsumerState<DismissEmployeeTask> {
                         Dio dio = Dio();
                         await dio.delete(
                           'http://$ipAddress:8000/hrm/duty/${widget.taskId}/',
-                          options: Options(
-                            headers: {
-                              "Authorization":
-                                  "Bearer ${ref.read(tokenProvider.state).state}",
-                            },
-                          ),
+                          options: getOpts(ref),
                         );
+
+                        showSnackBar(
+                            context, 'Done, thanks for freeing storage');
 
                         Navigator.pop(context);
                       } catch (error) {
+                        showSnackBar(context,
+                            'Something went wrong, cant dismiss your task.');
+                        print(error);
+                      } finally {
                         setState(() {
                           isLoading = false;
                         });
-                        print('error');
-                        print(error);
                       }
                     },
                     child: const Text(

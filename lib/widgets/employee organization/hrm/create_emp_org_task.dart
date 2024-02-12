@@ -7,20 +7,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-class NewTask extends ConsumerStatefulWidget {
-  const NewTask({
+class NewEmpOrgTask extends ConsumerStatefulWidget {
+  const NewEmpOrgTask({
     super.key,
     required this.organizationId,
-    required this.customerId,
   });
   final String organizationId;
-  final int customerId;
 
   @override
-  ConsumerState<NewTask> createState() => _NewTaskState();
+  ConsumerState<NewEmpOrgTask> createState() => _NewTaskState();
 }
 
-class _NewTaskState extends ConsumerState<NewTask> {
+class _NewTaskState extends ConsumerState<NewEmpOrgTask> {
   final formKey = GlobalKey<FormState>();
 
   String title = '';
@@ -157,19 +155,16 @@ class _NewTaskState extends ConsumerState<NewTask> {
                                 options: getOpts(ref),
                               );
 
-                              await dio.post(
-                                'http://$ipAddress:8000/crm/tasks/',
-                                data: {
-                                  'customer_id': widget.customerId.toString(),
-                                  'task_id': response.data['id'].toString(),
-                                },
-                                options: getOpts(ref),
-                              );
-                              showSnackBar(context, 'Task Added Successfully');
+                              if (response.statusCode == 200 ||
+                                  response.statusCode == 201) {
+                                showSnackBar(context,
+                                    "Task Added Successfully, Good Luck");
+                              }
+
                               Navigator.pop(context);
                             } catch (error) {
-                              showSnackBar(context,
-                                  "Sorry, couldn't create task, something went wrong");
+                              showSnackBar(
+                                  context, "Something went wrong.... :( ");
                               print(error);
                             } finally {
                               setState(() {
@@ -218,95 +213,3 @@ class _NewTaskState extends ConsumerState<NewTask> {
     );
   }
 }
-
-// await showDialog<void>(
-//   context: context,
-//   builder: (context) => AlertDialog(
-//     content: Stack(
-//       clipBehavior: Clip.none,
-//       children: [
-//         Positioned(
-//           right: -40,
-//           top: -40,
-//           child: InkResponse(
-//             onTap: () {
-//               Navigator.of(context).pop();
-//             },
-//             child: const CircleAvatar(
-//               backgroundColor: Colors.red,
-//               child: Icon(Icons.close),
-//             ),
-//           ),
-//         ),
-//         Form(
-//           key: formKey,
-//           child: Column(
-//             mainAxisSize: MainAxisSize.min,
-//             children: [
-//               Padding(
-//                 padding: const EdgeInsets.all(8),
-//                 child: TextFormField(
-//                   decoration: const InputDecoration(hintText: "Title: "),
-//                   validator: (value) {
-//                     if (value == null ||
-//                         value.trim().isEmpty ||
-//                         value.length < 4) {
-//                       return "Add something at least,...";
-//                     }
-//                     return null;
-//                   },
-//                   onSaved: (value) {
-//                     title = value!;
-//                   },
-//                 ),
-//               ),
-//               Padding(
-//                 padding: const EdgeInsets.all(8),
-//                 child: TextFormField(
-//                   decoration: const InputDecoration(hintText: "Details: "),
-//                 ),
-//               ),
-
-//               // Calendar Stuff
-//               Row(
-//                 mainAxisAlignment: MainAxisAlignment.end,
-//                 children: [
-//                   Text(
-//                     dueDate == null
-//                         ? 'Select Date:'
-//                         : formatter.format(dueDate!),
-//                   ),
-//                   // Calendar Button
-//                   IconButton(
-//                     onPressed: () {
-//                       datePicker();
-//                     },
-//                     icon: const Icon(
-//                       Icons.calendar_month,
-//                     ),
-//                   )
-//                 ],
-//               ),
-
-//               // form submit button
-//               Padding(
-//                 padding: const EdgeInsets.all(8),
-//                 child: ElevatedButton(
-//                   child: const Text('Submitß'),
-//                   onPressed: () {
-//                     if (formKey.currentState!.validate()) {
-//                       formKey.currentState!.save();
-
-//                       print(title);
-//                       print(formatter.format(dueDate!));
-//                     }
-//                   },
-//                 ),
-//               )
-//             ],
-//           ),
-//         ),
-//       ],
-//     ),
-//   ),
-// );

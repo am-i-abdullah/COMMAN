@@ -1,6 +1,8 @@
 import 'package:comman/api/data_fetching/get_user.dart';
 import 'package:comman/pages/auth.dart';
+import 'package:comman/pages/loading.dart';
 import 'package:comman/pages/main_page.dart';
+import 'package:comman/provider/theme_provider.dart';
 import 'package:comman/provider/token_provider.dart';
 import 'package:comman/provider/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -24,24 +26,11 @@ class _MyAppState extends ConsumerState<MyApp> {
   // accessing local storage
   final storage = const FlutterSecureStorage();
   var isTokenAvailable = true;
-
-  // initial theme
-  var theme = ThemeMode.dark;
-  // changing the theme of app
-  void changeTheme() {
-    setState(() {
-      if (theme == ThemeMode.dark) {
-        theme = ThemeMode.light;
-      } else {
-        theme = ThemeMode.dark;
-      }
-    });
-  }
+  bool isLoading = true; // checking if app is busy in backend
 
   @override
   void initState() {
     super.initState();
-
     loadToken();
   }
 
@@ -53,12 +42,15 @@ class _MyAppState extends ConsumerState<MyApp> {
       ref.read(tokenProvider.state).state = token;
       var userDetails = await getUser(token: token!);
 
+      ref.read(userProvider).id = userDetails['id'];
       ref.read(userProvider).username = userDetails['username'];
       ref.read(userProvider).firstname = userDetails['first_name'];
       ref.read(userProvider).lastname = userDetails['last_name'];
       ref.read(userProvider).email = userDetails['email'];
     }
-    setState(() {});
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -72,25 +64,21 @@ class _MyAppState extends ConsumerState<MyApp> {
       // Light Mode Theme
       theme: lightModeTheme,
       //initial theme
-      themeMode: theme,
+      themeMode: ref.watch(themeProvider) ? ThemeMode.light : ThemeMode.dark,
 
       // body of the main page
       home: Consumer(
         builder: (context, ref, child) {
           final token = ref.watch(tokenProvider);
 
-          if (token == null) {
+          if (isLoading) {
+            return const LoadingScreen();
+          } else if (token == null) {
             return AuthScreen(
-              changeTheme: changeTheme,
-              currentTheme: theme,
               storage: storage,
             );
           } else {
-            return HomePage(
-              changeTheme: changeTheme,
-              currentTheme: theme,
-              storage: storage,
-            );
+            return const HomePage();
           }
         },
       ),

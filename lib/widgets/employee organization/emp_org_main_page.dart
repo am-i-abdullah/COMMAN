@@ -1,11 +1,13 @@
 import 'package:comman/pages/subpages/notifications.dart';
+import 'package:comman/provider/rank_provider.dart';
+import 'package:comman/provider/theme_provider.dart';
 import 'package:comman/widgets/employee%20organization/emp_crm.dart';
 import 'package:comman/widgets/employee%20organization/emp_hrm.dart';
-
 import 'package:comman/widgets/sidebar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class EmpOrgMainPage extends StatefulWidget {
+class EmpOrgMainPage extends ConsumerStatefulWidget {
   const EmpOrgMainPage({
     super.key,
     required this.orgId,
@@ -18,16 +20,28 @@ class EmpOrgMainPage extends StatefulWidget {
   final String rank;
 
   @override
-  State<EmpOrgMainPage> createState() => _EmpOrgMainPageState();
+  ConsumerState<EmpOrgMainPage> createState() => _EmpOrgMainPageState();
 }
 
-class _EmpOrgMainPageState extends State<EmpOrgMainPage> {
+class _EmpOrgMainPageState extends ConsumerState<EmpOrgMainPage> {
   var content;
 
   @override
+  void initState() {
+    super.initState();
+    setRank();
+  }
+
+  void setRank() async {
+    ref.read(rankProvider.notifier).state = widget.rank;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    var icon = (ref.watch(themeProvider)) ? Icons.light_mode : Icons.dark_mode;
+
     return Scaffold(
-      drawer: const SideBar(storage: null),
+      drawer: SideBar(orgId: widget.orgId),
       appBar: AppBar(
         // page tiltle
         centerTitle: true,
@@ -75,8 +89,7 @@ class _EmpOrgMainPageState extends State<EmpOrgMainPage> {
           // CRM buttom
           if (widget.rank == 'CFO' ||
               widget.rank == 'CEO' ||
-              widget.rank == 'Director' ||
-              widget.rank == 'Assistant Director')
+              widget.rank == 'CTO')
             IconButton(
               onPressed: () {
                 setState(() {
@@ -97,6 +110,14 @@ class _EmpOrgMainPageState extends State<EmpOrgMainPage> {
             },
             icon: const Icon(Icons.notifications),
           ),
+          // change theme button
+          IconButton(
+            onPressed: () {
+              toggleTheme(ref);
+            },
+            icon: Icon(icon),
+          ),
+          const SizedBox(width: 10),
         ],
         // leading: IconButton(
         //   icon: const Icon(Icons.arrow_back),

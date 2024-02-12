@@ -1,5 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:comman/provider/token_provider.dart';
 import 'package:comman/utils/constants.dart';
+import 'package:comman/widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -148,25 +151,20 @@ class _NewOrganizationTaskState extends ConsumerState<NewOrganizationTask> {
                               var response = await dio.post(
                                 'http://$ipAddress:8000/hrm/tasks/',
                                 data: body,
-                                options: Options(
-                                  headers: {
-                                    "Authorization":
-                                        "Bearer ${ref.read(tokenProvider.state).state}",
-                                  },
-                                ),
+                                options: getOpts(ref),
                               );
-
-                              print(response);
+                              showSnackBar(
+                                  context, 'Task Created Successfully.');
                               Navigator.pop(context);
                             } catch (error) {
-                              print('error');
+                              showSnackBar(
+                                  context, 'Sorry unable to create task');
                               print(error);
+                            } finally {
+                              setState(() {
+                                isLoading = false;
+                              });
                             }
-                          } else {
-                            setState(() {
-                              isLoading = false;
-                            });
-                            return;
                           }
                         },
                         child: const Text(

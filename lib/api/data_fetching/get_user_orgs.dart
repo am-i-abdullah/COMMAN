@@ -8,16 +8,12 @@ Future<List<dynamic>?> getUserOrganizations({
     "Authorization": "Bearer $token",
   };
 
-  print('im here');
-
   var url = 'http://$ipAddress:8000/hrm/user/organizations/';
   Dio dio = Dio();
 
   try {
     Response response =
         await dio.get(url, data: body, options: Options(headers: body));
-
-    print(response.data);
 
     if (response.statusCode == 200) {
       return response.data;

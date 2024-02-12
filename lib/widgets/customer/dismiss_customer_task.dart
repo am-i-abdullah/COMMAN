@@ -56,11 +56,12 @@ class _DismissCustomerTaskState extends ConsumerState<DismissCustomerTask> {
 
                         Navigator.pop(context);
                       } catch (error) {
+                        print('error');
+                        print(error);
+                      } finally {
                         setState(() {
                           isLoading = false;
                         });
-                        print('error');
-                        print(error);
                       }
                     },
                     child: const Text(

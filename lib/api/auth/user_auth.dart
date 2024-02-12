@@ -19,7 +19,7 @@ Future<String> userAuth(
 
   try {
     Response response = await dio.post(url, data: body);
-
+    print(response.data['access']);
     return response.data['access'];
   } catch (error) {
     print('error');
@@ -28,6 +28,3 @@ Future<String> userAuth(
 
   return '';
 }
-
-
-// 10.7.81.11:8000

@@ -1,23 +1,14 @@
-import 'package:comman/api/data_fetching/get_user.dart';
 import 'package:comman/pages/user_settings.dart';
+import 'package:comman/provider/theme_provider.dart';
 import 'package:comman/provider/user_provider.dart';
-import 'package:comman/utils/constants.dart';
 import 'package:comman/pages/subpages/notifications.dart';
 import 'package:comman/pages/subpages/home.dart';
-import 'package:comman/widgets/sidebar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomePage extends ConsumerStatefulWidget {
-  const HomePage(
-      {super.key,
-      required this.changeTheme,
-      required this.currentTheme,
-      required this.storage});
+  const HomePage({super.key});
 
-  final void Function() changeTheme;
-  final currentTheme;
-  final storage;
   @override
   ConsumerState<HomePage> createState() => _HomePageState();
 }
@@ -30,13 +21,11 @@ class _HomePageState extends ConsumerState<HomePage> {
     // *** *** *** *** *** //
     ref.watch(userProvider);
     // varying icon for theme
-    var icon = (widget.currentTheme == ThemeMode.dark)
-        ? Icons.light_mode
-        : Icons.dark_mode;
+    var icon = (ref.watch(themeProvider)) ? Icons.light_mode : Icons.dark_mode;
     final width = MediaQuery.of(context).size.width;
 
     return DefaultTabController(
-      length: 4,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           titleSpacing: 0,
@@ -48,10 +37,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             hoverColor: Colors.transparent,
             highlightColor: Colors.transparent,
             onTap: () {
-              setState(() {
-                getUser(token: tokenToken);
-                content = const Home();
-              });
+              content = const Home();
             },
             child: const Text(
               "COMMAN",
@@ -111,7 +97,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   // change theme button
                   IconButton(
                     onPressed: () {
-                      widget.changeTheme();
+                      toggleTheme(ref);
                     },
                     icon: Icon(icon),
                   ),
@@ -123,7 +109,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   // change theme button
                   IconButton(
                     onPressed: () {
-                      widget.changeTheme();
+                      toggleTheme(ref);
                     },
                     icon: Icon(icon),
                   ),
@@ -154,7 +140,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                   child: SizedBox(),
                 ),
         ),
-        drawer: SideBar(storage: widget.storage),
 
         // body of main page
         body: width > 700

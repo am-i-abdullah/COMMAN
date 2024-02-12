@@ -1,24 +1,24 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:comman/api/data_fetching/org_pending_task.dart';
+import 'package:comman/api/data_fetching/emp_pending_task.dart';
 import 'package:comman/provider/token_provider.dart';
 import 'package:comman/utils/constants.dart';
-import 'package:comman/widgets/organization/dismiss_org_task.dart';
+import 'package:comman/widgets/employee%20organization/hrm/dismiss_employee_task.dart';
 import 'package:comman/widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-class PendingTasks extends ConsumerStatefulWidget {
-  const PendingTasks({super.key, required this.id});
+class EmployeePendingTasks extends ConsumerStatefulWidget {
+  const EmployeePendingTasks({super.key, required this.id});
   final String id;
 
   @override
-  ConsumerState<PendingTasks> createState() => _PendingTasksState();
+  ConsumerState<EmployeePendingTasks> createState() => _PendingTasksState();
 }
 
-class _PendingTasksState extends ConsumerState<PendingTasks> {
+class _PendingTasksState extends ConsumerState<EmployeePendingTasks> {
   var tasks;
   var content;
   @override
@@ -29,7 +29,7 @@ class _PendingTasksState extends ConsumerState<PendingTasks> {
 
   void getData() async {
     content = const Center(child: CircularProgressIndicator());
-    tasks = await getOrgPendingTasks(
+    tasks = await getEmpPendingTasks(
       token: ref.read(tokenProvider.state).state!,
       id: widget.id,
     );
@@ -37,7 +37,7 @@ class _PendingTasksState extends ConsumerState<PendingTasks> {
     if (tasks.toString() == '[]') {
       content = const Center(
         child: Text(
-          "Dial 0320-0094995, \nGet your business promoted, \nyou'll see a list here!",
+          "Nothing pending..., \nEnjoy!",
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 19),
         ),
@@ -55,17 +55,21 @@ class _PendingTasksState extends ConsumerState<PendingTasks> {
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: width > 850 ? 2 : 1,
-        childAspectRatio: width > 850 ? 2 : 1.5,
+        crossAxisCount: width > 1100
+            ? 3
+            : width > 700
+                ? 2
+                : 1,
+        childAspectRatio: width < 500 ? 1.25 : 1.75,
         crossAxisSpacing: 0,
         mainAxisSpacing: 12,
       ),
       children: (tasks != null && tasks.isNotEmpty)
           ? [
               for (final task in tasks)
-                PendingTask(
+                EmployeePendingTask(
                   id: task['id'].toString(),
-                  title: task['title'],
+                  title: task['task']['responsibility'],
                   width: width,
                   date: task['date_due'],
                   details: task['details'],
@@ -74,14 +78,14 @@ class _PendingTasksState extends ConsumerState<PendingTasks> {
                 ),
             ]
           : width > 800
-              ? [content, content]
+              ? [const SizedBox(), content]
               : [content],
     );
   }
 }
 
-class PendingTask extends ConsumerWidget {
-  const PendingTask({
+class EmployeePendingTask extends ConsumerWidget {
+  const EmployeePendingTask({
     super.key,
     required this.id,
     required this.width,
@@ -119,14 +123,14 @@ class PendingTask extends ConsumerWidget {
           : Colors.white54,
       shadowColor: Colors.black,
       child: Padding(
-        padding: const EdgeInsets.all(25),
+        padding: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               convertDate(),
-              style: TextStyle(fontSize: width < 600 ? 14 : 20),
+              style: TextStyle(fontSize: width < 600 ? 14 : 18),
             ),
             Text(
               title,
@@ -134,8 +138,10 @@ class PendingTask extends ConsumerWidget {
               style: TextStyle(fontSize: width < 600 ? 20 : 35),
             ),
             Text(
-              "Detaisl: $details",
-              style: TextStyle(fontSize: width < 600 ? 12 : 18),
+              "Details: $details",
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: width < 600 ? 12 : 17),
             ),
             Text(
               'Completion Status: ${status ? 'Completed' : 'Pending'}',
@@ -159,17 +165,17 @@ class PendingTask extends ConsumerWidget {
                         try {
                           print('updating the organization task');
                           var response = await dio.patch(
-                            'http://$ipAddress:8000/hrm/task/$id/',
+                            'http://$ipAddress:8000/hrm/duty/$id/',
                             options: getOpts(ref),
                             data: {
                               'completion_status': !status,
                             },
                           );
-                          showSnackBar(context, 'Status updated!');
+                          showSnackBar(
+                              context, 'Task Status Updated Successfully');
                           refresh();
                         } catch (error) {
-                          showSnackBar(
-                              context, 'Sorry, cant change the status.');
+                          showSnackBar(context, 'Sorry, something went wrong');
                           print(error);
                         }
                       },
@@ -192,7 +198,7 @@ class PendingTask extends ConsumerWidget {
                         await showDialog<void>(
                           context: context,
                           builder: (context) => AlertDialog(
-                            content: DismissOrganizationTask(
+                            content: DismissEmployeeTask(
                               taskId: id,
                             ),
                           ),

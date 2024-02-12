@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:comman/api/data_fetching/org_pending_task.dart';
 import 'package:comman/provider/token_provider.dart';
 import 'package:comman/utils/constants.dart';
@@ -10,15 +8,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-class PendingTasks extends ConsumerStatefulWidget {
-  const PendingTasks({super.key, required this.id});
+class EmpOrgPendingTasks extends ConsumerStatefulWidget {
+  const EmpOrgPendingTasks({super.key, required this.id});
   final String id;
 
   @override
-  ConsumerState<PendingTasks> createState() => _PendingTasksState();
+  ConsumerState<EmpOrgPendingTasks> createState() => _EmpOrgPendingTasksState();
 }
 
-class _PendingTasksState extends ConsumerState<PendingTasks> {
+class _EmpOrgPendingTasksState extends ConsumerState<EmpOrgPendingTasks> {
   var tasks;
   var content;
   @override
@@ -55,15 +53,19 @@ class _PendingTasksState extends ConsumerState<PendingTasks> {
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: width > 850 ? 2 : 1,
-        childAspectRatio: width > 850 ? 2 : 1.5,
+        crossAxisCount: width > 1100
+            ? 3
+            : width > 700
+                ? 2
+                : 1,
+        childAspectRatio: width < 500 ? 1.25 : 1.75,
         crossAxisSpacing: 0,
         mainAxisSpacing: 12,
       ),
       children: (tasks != null && tasks.isNotEmpty)
           ? [
               for (final task in tasks)
-                PendingTask(
+                EmployeePendingTask(
                   id: task['id'].toString(),
                   title: task['title'],
                   width: width,
@@ -74,14 +76,14 @@ class _PendingTasksState extends ConsumerState<PendingTasks> {
                 ),
             ]
           : width > 800
-              ? [content, content]
+              ? [const SizedBox(), content]
               : [content],
     );
   }
 }
 
-class PendingTask extends ConsumerWidget {
-  const PendingTask({
+class EmployeePendingTask extends ConsumerWidget {
+  const EmployeePendingTask({
     super.key,
     required this.id,
     required this.width,
@@ -134,7 +136,7 @@ class PendingTask extends ConsumerWidget {
               style: TextStyle(fontSize: width < 600 ? 20 : 35),
             ),
             Text(
-              "Detaisl: $details",
+              "Details: $details",
               style: TextStyle(fontSize: width < 600 ? 12 : 18),
             ),
             Text(
@@ -165,11 +167,10 @@ class PendingTask extends ConsumerWidget {
                               'completion_status': !status,
                             },
                           );
-                          showSnackBar(context, 'Status updated!');
+                          showSnackBar(context, 'Task Updated Successfully!');
                           refresh();
                         } catch (error) {
-                          showSnackBar(
-                              context, 'Sorry, cant change the status.');
+                          print('error');
                           print(error);
                         }
                       },

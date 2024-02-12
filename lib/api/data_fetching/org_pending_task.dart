@@ -11,8 +11,7 @@ Future<List<dynamic>?> getOrgPendingTasks({
 
   print('fetching organization pending tasks');
 
-  var url =
-      'http://$ipAddress:8000/hrm/employee/organization/$id/organization-tasks/';
+  var url = 'http://$ipAddress:8000/hrm/organization/$id/organization-tasks/';
   Dio dio = Dio();
 
   try {
